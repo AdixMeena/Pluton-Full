@@ -37,26 +37,47 @@
 4. Connect your GitHub account and select `AdixMeena/Pluton-Full` repository
 5. Choose the **main** branch
 
-### Step 2: App Configuration
-DigitalOcean will automatically detect the app spec from `.do/app.yaml`:
-- **Backend Service**: Python FastAPI
-- **Frontend Service**: Node.js React app
+### Step 2: Configure Services Manually
+
+Since this is a monorepo, you'll need to configure each service manually:
+
+#### **Add Backend Service:**
+1. Click **"+ Add Component"** → **"Service"**
+2. **Service Name**: `backend`
+3. **Source Directory**: `backend`
+4. **Environment**: `Python`
+5. **Run Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+6. **Instance Count**: `1`
+7. **Instance Size**: `Basic XXS`
+
+#### **Add Frontend Service:**
+1. Click **"+ Add Component"** → **"Static Site"** (or **"Service"**)
+2. **Service Name**: `frontend`
+3. **Source Directory**: `frontend`
+4. **Environment**: `Node.js`
+5. **Build Command**: `npm run build`
+6. **Run Command**: `npm run preview -- --host 0.0.0.0 --port $PORT`
+7. **Instance Count**: `1`
+8. **Instance Size**: `Basic XXS`
 
 ### Step 3: Environment Variables
-Add these environment variables in DigitalOcean App Platform:
 
-#### Global Environment Variables:
+#### **Global Environment Variables** (apply to all services):
 ```
 SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-BACKEND_URL=https://your-backend-app-name.ondigitalocean.app
-FRONTEND_URL=https://your-frontend-app-name.ondigitalocean.app
 ```
 
-#### Backend Service Variables:
+#### **Backend Service Variables:**
 ```
 SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 GROQ_API_KEY=your-groq-api-key
+FRONTEND_URL=https://your-app-name.ondigitalocean.app
+```
+
+#### **Frontend Service Variables:**
+```
+VITE_BACKEND_URL=https://your-app-name-backend.ondigitalocean.app
 ```
 
 ### Step 4: Deploy
