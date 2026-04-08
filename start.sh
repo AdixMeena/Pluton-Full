@@ -15,7 +15,8 @@ if [ -f "backend/main.py" ] && [ -f "backend/requirements.txt" ]; then
 
     # Install Python dependencies
     echo "📦 Installing Python dependencies..."
-    pip install -r requirements.txt
+    python -m pip install --upgrade pip
+    python -m pip install -r requirements.txt
 
     # Start the FastAPI server
     echo "🚀 Starting FastAPI server on port $PORT..."
