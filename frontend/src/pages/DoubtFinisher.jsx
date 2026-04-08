@@ -2,16 +2,19 @@ import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase, askAI } from '../lib/clients'
 import ReactMarkdown from 'react-markdown'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import toast from 'react-hot-toast'
 import { MessageCircle, Send, Trash2, Sparkles, Bot, User } from 'lucide-react'
+import '../styles/markdown.css'
 
 const SUGGESTIONS = [
-  "Newton's laws kya hain? Simple explain karo",
-  "What is Big O notation? Beginner ke liye",
-  "Photosynthesis ka process explain karo",
-  "Difference between RAM and ROM?",
-  "French Revolution kab aur kyun hua?",
-  "Python mein list aur tuple mein kya fark hai?",
+"What is recursion? Explain with a simple example",
+"Difference between '==' and '===' in JavaScript?",
+"What is a REST API? Explain for beginners",
+"How does a for loop work in Python?",
+"What is the difference between SQL and NoSQL?",
+"What is object-oriented programming? Simple explanation",
 ]
 
 export default function DoubtFinisher() {
@@ -19,7 +22,7 @@ export default function DoubtFinisher() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: `Hey! Main Pluton AI hoon 🤖✨\n\nTumhara **Doubt Finisher** — koi bhi sawaal pucho, main samjhaunga apni language mein!\n\nBeginner se Advanced tak, har level ke liye explain karta hoon. Kya doubt hai aaj? 🚀`,
+      content: `Hey This is Pluton 🤖✨\n\nYour **Doubt Finisher** — Ask Anything in your Language \n\n What Doubt You have Today! 🚀`,
       id: Date.now(),
     }
   ])
@@ -29,6 +32,23 @@ export default function DoubtFinisher() {
   const inputRef = useRef(null)
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+
+  useEffect(() => {
+    const ctx = localStorage.getItem('pluton_chat_context')
+    if (ctx) {
+      const topicTitle = ctx.split('\n')[0]
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: `Topic context loaded! 🎯\n\n**${topicTitle}**\n\nMain is topic ke bare mein explain karunga. Kya jaanna chahte ho? 🚀`,
+        id: Date.now(),
+      }])
+      // Automatically send a learning message
+      setTimeout(() => {
+        sendMessage(`I am learning "${topicTitle}" - redirected from roadmap. Please explain this topic to me.`)
+      }, 1000)
+      localStorage.removeItem('pluton_chat_context')
+    }
+  }, [])
 
   async function sendMessage(text) {
     const msg = text || input.trim()
@@ -45,7 +65,8 @@ export default function DoubtFinisher() {
 The student's level is: ${profile?.level || 'Beginner'}.
 Explain concepts in Hinglish (English + Hindi mix). Be encouraging, use examples, analogies.
 Use emojis to keep it fun. Format responses clearly with markdown.
-If asked something off-topic from studying, gently bring it back to learning.`
+If asked something off-topic from studying, gently bring it back to learning.
+and make it as shorter response as much you can based on topic `
 
       const answer = await askAI([...history, { role: 'user', content: msg }], systemPrompt)
       setMessages(prev => [...prev, { role: 'assistant', content: answer, id: Date.now() }])
@@ -124,8 +145,30 @@ If asked something off-topic from studying, gently bring it back to learning.`
               color: '#e2e8f0',
             }}>
               {msg.role === 'assistant' ? (
-                <div className="markdown-body" style={{ fontSize: '0.875rem' }}>
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                <div className="markdown-body">
+                  <ReactMarkdown
+                    components={{
+                      code({ inline, className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || '')
+                        return !inline && match ? (
+                          <SyntaxHighlighter
+                            style={oneDark}
+                            language={match[1]}
+                            PreTag="div"
+                            {...props}
+                          >
+                            {String(children).replace(/\n$/, '')}
+                          </SyntaxHighlighter>
+                        ) : (
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        )
+                      }
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
                 </div>
               ) : (
                 <p>{msg.content}</p>

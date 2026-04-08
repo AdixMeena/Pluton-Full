@@ -96,6 +96,41 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Personalized Learning Banner */}
+      {!profile?.learning_profile && (
+        <div className="animate-fade-in-up stagger-2 glass-card" style={{ padding: '20px', marginBottom: 24, background: 'linear-gradient(135deg, rgba(124,58,237,0.1), rgba(139,92,246,0.05))', border: '1px solid rgba(124,58,237,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontFamily: 'Syne', fontWeight: 700, color: '#f1f5f9', fontSize: '1rem', marginBottom: 4 }}>🎯 Create Your Personalized Learning Profile</h3>
+              <p style={{ color: '#94a3b8', fontSize: '0.8rem', margin: 0 }}>
+                Take a quick interview to help AI understand your learning style and get personalized recommendations!
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/interview')}
+              style={{
+                padding: '10px 16px',
+                borderRadius: 8,
+                background: 'linear-gradient(135deg, #7c3aed, #a78bfa)',
+                border: 'none',
+                color: 'white',
+                fontFamily: 'Syne',
+                fontWeight: 600,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <Star size={14} />
+              Start Interview
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Stats */}
       <div className="animate-fade-in-up stagger-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14, marginBottom: 32 }}>
         {[

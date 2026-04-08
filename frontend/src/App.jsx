@@ -14,6 +14,7 @@ import DoubtFinisher from './pages/DoubtFinisher'
 import Roadmap from './pages/Roadmap'
 import TodoJournal from './pages/TodoJournal'
 import Profile from './pages/Profile'
+import Interview from './pages/Interview'
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="roadmap" element={<Roadmap />} />
             <Route path="todo" element={<TodoJournal />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="interview" element={<Interview />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

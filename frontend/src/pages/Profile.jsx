@@ -2,8 +2,12 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/clients'
 import toast from 'react-hot-toast'
-import { User, Zap, Flame, Brain, FileText, Youtube, Save, Edit2, BarChart2, Star, Trophy } from 'lucide-react'
+import { User, Zap, Flame, Brain, FileText, Youtube, Save, Edit2, BarChart2, Star, Trophy, Sparkles, RefreshCw, MessageCircle } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import ReactMarkdown from 'react-markdown'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import '../styles/markdown.css'
 
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced']
 const levelColors = { Beginner: '#34d399', Intermediate: '#fbbf24', Advanced: '#f87171' }
@@ -16,12 +20,15 @@ export default function Profile() {
   const [quizHistory, setQuizHistory] = useState([])
   const [saving, setSaving] = useState(false)
   const [weeklyData, setWeeklyData] = useState([])
+  const [generatingProfile, setGeneratingProfile] = useState(false)
+  const [learningProfile, setLearningProfile] = useState(null)
 
   useEffect(() => {
     if (profile) {
       setForm({ name: profile.name || '', level: profile.level || 'Beginner', bio: profile.bio || '' })
       fetchStats()
       fetchQuizHistory()
+      setLearningProfile(profile.learning_profile || null)
     }
   }, [profile])
 
@@ -46,6 +53,66 @@ export default function Profile() {
       score: Math.round((q.score / q.total) * 100),
     }))
     setWeeklyData(chartData)
+  }
+
+  async function generatePersonalizedProfile() {
+    setGeneratingProfile(true)
+    try {
+      // Get date 7 days ago
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+      // Fetch user data from last 7 days
+      const [chatMessages, quizzes, ytSummaries, pdfExtractions, roadmaps] = await Promise.all([
+        supabase.from('chat_messages').select('*').eq('user_id', user.id).gte('created_at', sevenDaysAgo.toISOString()).order('created_at'),
+        supabase.from('quizzes').select('*').eq('user_id', user.id).gte('created_at', sevenDaysAgo.toISOString()).order('created_at'),
+        supabase.from('yt_summaries').select('*').eq('user_id', user.id).gte('created_at', sevenDaysAgo.toISOString()).order('created_at'),
+        supabase.from('pdf_extractions').select('*').eq('user_id', user.id).gte('created_at', sevenDaysAgo.toISOString()).order('created_at'),
+        supabase.from('roadmaps').select('*, subjects(name)').eq('user_id', user.id).gte('updated_at', sevenDaysAgo.toISOString()).order('updated_at')
+      ])
+
+      const userData = {
+        chat_messages: chatMessages.data || [],
+        quizzes: quizzes.data || [],
+        yt_summaries: ytSummaries.data || [],
+        pdf_extractions: pdfExtractions.data || [],
+        roadmaps: roadmaps.data || []
+      }
+
+      // Send to backend for analysis
+      const response = await fetch('http://localhost:8000/generate-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          user_data: userData
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate profile')
+      }
+
+      const result = await response.json()
+      const profileText = result.learning_profile
+
+      // Store the profile in user profile
+      await supabase.from('profiles').update({
+        learning_profile: profileText,
+        updated_at: new Date().toISOString()
+      }).eq('id', user.id)
+
+      setLearningProfile(profileText)
+      toast.success('Personalized learning profile generated! 🎯')
+
+    } catch (error) {
+      console.error('Error generating profile:', error)
+      toast.error('Failed to generate personalized profile')
+    } finally {
+      setGeneratingProfile(false)
+    }
   }
 
   async function handleSave() {
@@ -243,6 +310,132 @@ export default function Profile() {
           ))}
         </div>
       </div>
+
+      {/* Personalized Environment */}
+      <div className="glass-card" style={{ padding: '24px', marginTop: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <h3 style={{ fontFamily: 'Syne', fontWeight: 700, color: '#f1f5f9', fontSize: '0.95rem' }}>✨ Personalized Environment</h3>
+          <button
+            onClick={generatePersonalizedProfile}
+            disabled={generatingProfile}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8,
+              background: 'linear-gradient(135deg, #7c3aed, #a78bfa)', border: 'none', cursor: 'pointer',
+              fontFamily: 'Syne', fontWeight: 600, fontSize: '0.8rem', color: 'white',
+              opacity: generatingProfile ? 0.7 : 1, transition: 'all 0.2s'
+            }}
+          >
+            {generatingProfile ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
+            {generatingProfile ? 'Analyzing...' : 'Generate Profile'}
+          </button>
+        </div>
+        
+        {learningProfile ? (
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '16px' }}>
+            <div style={{ color: '#64748b', fontSize: '0.8rem', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+              {learningProfile}
+            </div>
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '20px', color: '#475569' }}>
+            <Sparkles size={32} style={{ marginBottom: 12, opacity: 0.5 }} />
+            <p style={{ fontFamily: 'Syne', fontWeight: 600, marginBottom: 8 }}>No personalized profile yet</p>
+            <p style={{ fontSize: '0.8rem', marginBottom: 16 }}>Choose how to create your personalized learning environment:</p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <button
+                onClick={() => window.location.href = '/interview'}
+                style={{
+                  padding: '10px 16px',
+                  borderRadius: 8,
+                  background: 'linear-gradient(135deg, #7c3aed, #a78bfa)',
+                  border: 'none',
+                  color: 'white',
+                  fontFamily: 'Syne',
+                  fontWeight: 600,
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}
+              >
+                <MessageCircle size={14} />
+                Take Interview
+              </button>
+              <button
+                onClick={generatePersonalizedProfile}
+                disabled={generatingProfile}
+                style={{
+                  padding: '10px 16px',
+                  borderRadius: 8,
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  color: '#cbd5e1',
+                  fontFamily: 'Syne',
+                  fontWeight: 600,
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}
+              >
+                <Sparkles size={14} />
+                Analyze My Data
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Personalized Environment Display */}
+      {learningProfile && (
+        <div className="glass-card" style={{ padding: '24px', marginTop: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <h3 style={{ fontFamily: 'Syne', fontWeight: 700, color: '#f1f5f9', fontSize: '0.95rem' }}>✨ Your Learning Profile</h3>
+            <button
+              onClick={() => setLearningProfile(null)}
+              style={{
+                color: '#64748b',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontFamily: 'Syne',
+                fontWeight: 600
+              }}
+            >
+              Hide
+            </button>
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '16px' }}>
+            <ReactMarkdown
+              className="markdown-body"
+              components={{
+                code({ node, inline, className, children, ...props }) {
+                  const match = /language-(\w+)/.exec(className || '')
+                  return !inline && match ? (
+                    <SyntaxHighlighter
+                      style={oneDark}
+                      language={match[1]}
+                      PreTag="div"
+                      {...props}
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  )
+                }
+              }}
+            >
+              {learningProfile}
+            </ReactMarkdown>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

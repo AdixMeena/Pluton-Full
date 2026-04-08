@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import { supabase, askAI } from '../lib/clients'
 import ReactMarkdown from 'react-markdown'
 import toast from 'react-hot-toast'
-import { Map, Sparkles, Check, Circle, ChevronDown, ChevronRight, Plus, RefreshCw } from 'lucide-react'
+import { Map, Sparkles, Check, Circle, ChevronDown, ChevronRight, Plus, RefreshCw, MessageCircle, Brain } from 'lucide-react'
 
 export default function Roadmap() {
   const { user } = useAuth()
@@ -60,7 +60,7 @@ Return ONLY valid JSON (no markdown, no backticks):
     }
   ]
 }
-Make 3-4 phases with 4-6 topics each. Use Hinglish where helpful. Return ONLY the JSON.`
+Make 3-4 phases with 4-6 topics each. Use English. Return ONLY the JSON.`
 
       const raw = await askAI([{ role: 'user', content: prompt }], 'You generate learning roadmaps as JSON only. No markdown, no backticks.')
       const clean = raw.replace(/```json|```/g, '').trim()
@@ -102,6 +102,18 @@ Make 3-4 phases with 4-6 topics each. Use Hinglish where helpful. Return ONLY th
     await supabase.from('subjects').update({ progress }).eq('id', selectedSubject.id)
   }
 
+  function chatWithTopic(topic) {
+    const topicText = `${topic.title}\n${topic.description || ''}`
+    localStorage.setItem('pluton_chat_context', topicText)
+    window.location.href = '/chat'
+  }
+
+  function quizFromTopic(topic) {
+    const topicText = `${topic.title}\n${topic.description || ''}`
+    localStorage.setItem('pluton_quiz_context', topicText)
+    window.location.href = '/quiz'
+  }
+
   const getPhaseCompletion = (phase) => {
     const done = phase.topics.filter(t => t.done).length
     return { done, total: phase.topics.length, pct: Math.round((done / phase.topics.length) * 100) }
@@ -120,7 +132,8 @@ Make 3-4 phases with 4-6 topics each. Use Hinglish where helpful. Return ONLY th
           <h1 className="section-title" style={{ fontSize: '1.6rem' }}>Learning Roadmap</h1>
         </div>
         <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
-          AI tumhare subject ke liye ek personalized learning path banata hai 🗺️
+          AI tumhare subject ke liye ek personalized learning path banata hai 🗺️<br/>
+          Har topic ke liye chat karo ya quiz generate karo!
         </p>
       </div>
 
@@ -251,33 +264,66 @@ Make 3-4 phases with 4-6 topics each. Use Hinglish where helpful. Return ONLY th
                             <p style={{ color: '#64748b', fontSize: '0.8rem', margin: '14px 0', lineHeight: 1.5 }}>{phase.description}</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                               {phase.topics.map(topic => (
-                                <button
-                                  key={topic.id}
-                                  onClick={() => toggleTopic(pi, topic.id)}
-                                  style={{
-                                    display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', borderRadius: 10,
-                                    background: topic.done ? `${color}10` : 'rgba(255,255,255,0.03)',
-                                    border: topic.done ? `1px solid ${color}30` : '1px solid rgba(255,255,255,0.07)',
-                                    cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
-                                  }}
-                                >
-                                  <div style={{
-                                    width: 22, height: 22, borderRadius: '50%', flexShrink: 0, marginTop: 1,
-                                    background: topic.done ? color : 'transparent',
-                                    border: topic.done ? `2px solid ${color}` : '2px solid rgba(255,255,255,0.15)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s',
-                                  }}>
+                                <div key={topic.id} style={{
+                                  display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', borderRadius: 10,
+                                  background: topic.done ? `${color}10` : 'rgba(255,255,255,0.03)',
+                                  border: topic.done ? `1px solid ${color}30` : '1px solid rgba(255,255,255,0.07)',
+                                  transition: 'all 0.2s',
+                                }}>
+                                  <button
+                                    onClick={() => toggleTopic(pi, topic.id)}
+                                    style={{
+                                      width: 22, height: 22, borderRadius: '50%', flexShrink: 0, marginTop: 1,
+                                      background: topic.done ? color : 'transparent',
+                                      border: topic.done ? `2px solid ${color}` : '2px solid rgba(255,255,255,0.15)',
+                                      display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s',
+                                      cursor: 'pointer',
+                                    }}
+                                  >
                                     {topic.done && <Check size={12} color="white" />}
-                                  </div>
-                                  <div>
-                                    <div style={{ fontFamily: 'Syne', fontWeight: 600, color: topic.done ? color : '#cbd5e1', fontSize: '0.85rem', textDecoration: topic.done ? 'line-through' : 'none', opacity: topic.done ? 0.7 : 1 }}>
-                                      {topic.title}
+                                  </button>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: topic.description ? 4 : 0 }}>
+                                      <div style={{ fontFamily: 'Syne', fontWeight: 600, color: topic.done ? color : '#cbd5e1', fontSize: '0.85rem', textDecoration: topic.done ? 'line-through' : 'none', opacity: topic.done ? 0.7 : 1, flex: 1 }}>
+                                        {topic.title}
+                                      </div>
+                                      {/* Action buttons on same line */}
+                                      <div style={{ display: 'flex', gap: 6 }}>
+                                        <button
+                                          onClick={() => chatWithTopic(topic)}
+                                          style={{
+                                            display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 6,
+                                            background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)',
+                                            color: '#60a5fa', fontSize: '0.7rem', fontFamily: 'Syne', fontWeight: 600,
+                                            cursor: 'pointer', transition: 'all 0.2s',
+                                          }}
+                                          onMouseOver={(e) => e.target.style.background = 'rgba(59, 130, 246, 0.2)'}
+                                          onMouseOut={(e) => e.target.style.background = 'rgba(59, 130, 246, 0.1)'}
+                                        >
+                                          <MessageCircle size={10} />
+                                          Chat
+                                        </button>
+                                        <button
+                                          onClick={() => quizFromTopic(topic)}
+                                          style={{
+                                            display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 6,
+                                            background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)',
+                                            color: '#34d399', fontSize: '0.7rem', fontFamily: 'Syne', fontWeight: 600,
+                                            cursor: 'pointer', transition: 'all 0.2s',
+                                          }}
+                                          onMouseOver={(e) => e.target.style.background = 'rgba(16, 185, 129, 0.2)'}
+                                          onMouseOut={(e) => e.target.style.background = 'rgba(16, 185, 129, 0.1)'}
+                                        >
+                                          <Brain size={10} />
+                                          Quiz
+                                        </button>
+                                      </div>
                                     </div>
                                     {topic.description && (
-                                      <div style={{ color: '#475569', fontSize: '0.75rem', marginTop: 2, lineHeight: 1.4 }}>{topic.description}</div>
+                                      <div style={{ color: '#475569', fontSize: '0.75rem', lineHeight: 1.4 }}>{topic.description}</div>
                                     )}
                                   </div>
-                                </button>
+                                </div>
                               ))}
                             </div>
                             {phase.milestone && (
