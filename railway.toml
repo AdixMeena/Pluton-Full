@@ -1,0 +1,10 @@
+# Railway Monorepo Configuration
+# Define services explicitly
+
+[services.api]
+buildCommand = "cd backend && pip install -r requirements.txt"
+startCommand = "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+
+[services.web]
+buildCommand = "cd frontend && npm install && npm run build"
+startCommand = "cd frontend && npm run preview"
