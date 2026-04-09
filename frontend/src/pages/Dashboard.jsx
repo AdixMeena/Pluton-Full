@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/clients'
 import toast from 'react-hot-toast'
 import {
-  Plus, Flame, Zap, Brain, BookOpen, Youtube, FileText,
+  Plus, Flame, Zap, Brain, BookOpen, FileText,
   Map, Trash2, BarChart2, Star, TrendingUp, X
 } from 'lucide-react'
 
@@ -15,7 +15,7 @@ export default function Dashboard() {
   const { profile, user } = useAuth()
   const navigate = useNavigate()
   const [subjects, setSubjects] = useState([])
-  const [stats, setStats] = useState({ yt: 0, pdf: 0, quiz: 0 })
+  const [stats, setStats] = useState({ pdf: 0, quiz: 0 })
   const [showAdd, setShowAdd] = useState(false)
   const [newSubject, setNewSubject] = useState({ name: '', icon: '📚', color: '#7c3aed', description: '' })
   const [loading, setLoading] = useState(true)
@@ -30,12 +30,11 @@ export default function Dashboard() {
   }
 
   async function fetchStats() {
-    const [yt, pdf, quiz] = await Promise.all([
-      supabase.from('yt_summaries').select('id', { count: 'exact' }).eq('user_id', user.id),
+    const [pdf, quiz] = await Promise.all([
       supabase.from('pdf_extractions').select('id', { count: 'exact' }).eq('user_id', user.id),
       supabase.from('quizzes').select('id', { count: 'exact' }).eq('user_id', user.id),
     ])
-    setStats({ yt: yt.count || 0, pdf: pdf.count || 0, quiz: quiz.count || 0 })
+    setStats({ pdf: pdf.count || 0, quiz: quiz.count || 0 })
   }
 
   async function addSubject() {
@@ -134,7 +133,6 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="animate-fade-in-up stagger-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14, marginBottom: 32 }}>
         {[
-          { label: 'YT Summaries', value: stats.yt, icon: Youtube, color: '#ef4444' },
           { label: 'PDFs Analyzed', value: stats.pdf, icon: FileText, color: '#a78bfa' },
           { label: 'Quizzes Done', value: stats.quiz, icon: Brain, color: '#fbbf24' },
           { label: 'Subjects', value: subjects.length, icon: BookOpen, color: '#34d399' },
@@ -154,7 +152,6 @@ export default function Dashboard() {
         <h2 className="section-title" style={{ marginBottom: 14 }}>Quick Actions</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
           {[
-            { label: 'Summarize YT', icon: Youtube, path: '/youtube', color: '#ef4444' },
             { label: 'Analyze PDF', icon: FileText, path: '/pdf', color: '#a78bfa' },
             { label: 'Take a Quiz', icon: Brain, path: '/quiz', color: '#fbbf24' },
             { label: 'Ask a Doubt', icon: BookOpen, path: '/chat', color: '#34d399' },

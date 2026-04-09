@@ -7,7 +7,6 @@ import AppLayout from './components/AppLayout'
 import Landing from './pages/Landing'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
-import YTSummarizer from './pages/YTSummarizer'
 import PDFExtractor from './pages/PDFExtractor'
 import QuizLab from './pages/QuizLab'
 import DoubtFinisher from './pages/DoubtFinisher'
@@ -35,7 +34,6 @@ export default function App() {
             }
           >
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="youtube" element={<YTSummarizer />} />
             <Route path="pdf" element={<PDFExtractor />} />
             <Route path="quiz" element={<QuizLab />} />
             <Route path="chat" element={<DoubtFinisher />} />

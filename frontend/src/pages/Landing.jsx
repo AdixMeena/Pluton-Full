@@ -6,7 +6,7 @@ const features = [
   { icon: Youtube, label: 'YT Summarizer', desc: 'Paste any YouTube link → get smart notes tailored to your level', color: '#ef4444' },
   { icon: FileText, label: 'PDF Extractor', desc: 'Upload PDFs → extract key questions & answers instantly', color: '#a78bfa' },
   { icon: Brain, label: 'Quiz Lab', desc: 'Generate quizzes from notes or YT summaries to test yourself', color: '#fbbf24' },
-  { icon: MessageCircle, label: 'Doubt Finisher', desc: 'Ask anything — AI explains in Hinglish, your way', color: '#34d399' },
+  { icon: MessageCircle, label: 'Doubt Finisher', desc: 'Ask anything — AI explains in simple, clear English', color: '#34d399' },
   { icon: Map, label: 'Roadmap Tracker', desc: 'Visual learning paths for every subject you add', color: '#60a5fa' },
   { icon: CheckSquare, label: 'To-Do & Journal', desc: 'Plan your day and reflect with your personal study journal', color: '#f472b6' },
 ]

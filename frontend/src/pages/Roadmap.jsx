@@ -132,8 +132,8 @@ Make 3-4 phases with 4-6 topics each. Use English. Return ONLY the JSON.`
           <h1 className="section-title" style={{ fontSize: '1.6rem' }}>Learning Roadmap</h1>
         </div>
         <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
-          AI tumhare subject ke liye ek personalized learning path banata hai 🗺️<br/>
-          Har topic ke liye chat karo ya quiz generate karo!
+          AI creates a personalized learning path for your subject 🗺️<br/>
+          Chat or generate quizzes for each topic!
         </p>
       </div>
 
@@ -142,7 +142,7 @@ Make 3-4 phases with 4-6 topics each. Use English. Return ONLY the JSON.`
         <div className="glass-card" style={{ padding: '48px 24px', textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', marginBottom: 12 }}>🪐</div>
           <h3 style={{ fontFamily: 'Syne', fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>No Subjects Yet</h3>
-          <p style={{ color: '#475569', fontSize: '0.875rem', marginBottom: 20 }}>Dashboard mein subject add karo pehle!</p>
+          <p style={{ color: '#475569', fontSize: '0.875rem', marginBottom: 20 }}>Add subjects in Dashboard first!</p>
           <button className="nebula-btn" onClick={() => window.location.href = '/dashboard'}>Go to Dashboard</button>
         </div>
       ) : (
@@ -187,7 +187,7 @@ Make 3-4 phases with 4-6 topics each. Use English. Return ONLY the JSON.`
               {generating && (
                 <div className="glass-card" style={{ padding: '40px 24px', textAlign: 'center' }}>
                   <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🗺️</div>
-                  <p style={{ color: '#94a3b8', fontFamily: 'Syne', fontWeight: 600 }}>AI roadmap design kar raha hai...</p>
+                  <p style={{ color: '#94a3b8', fontFamily: 'Syne', fontWeight: 600 }}>AI is designing your roadmap...</p>
                 </div>
               )}
 
@@ -195,7 +195,7 @@ Make 3-4 phases with 4-6 topics each. Use English. Return ONLY the JSON.`
                 <div className="glass-card" style={{ padding: '40px 24px', textAlign: 'center' }}>
                   <div style={{ fontSize: '3rem', marginBottom: 12 }}>✨</div>
                   <h3 style={{ fontFamily: 'Syne', fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>No roadmap yet</h3>
-                  <p style={{ color: '#475569', fontSize: '0.875rem', marginBottom: 20 }}>AI ek personalized learning path banayega {selectedSubject.name} ke liye!</p>
+                  <p style={{ color: '#475569', fontSize: '0.875rem', marginBottom: 20 }}>AI will create a personalized learning path for {selectedSubject.name}!</p>
                   <button className="nebula-btn" onClick={generateRoadmap}>
                     <Sparkles size={14} style={{ display: 'inline', marginRight: 6 }} />
                     Generate Roadmap

@@ -1,14 +1,13 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
-  LayoutDashboard, Youtube, FileText, Brain, MessageCircle,
+  LayoutDashboard, FileText, Brain, MessageCircle,
   Map, CheckSquare, User, LogOut, Zap, BookOpen
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/youtube', icon: Youtube, label: 'YT Summarizer' },
   { to: '/pdf', icon: FileText, label: 'PDF Notes' },
   { to: '/quiz', icon: Brain, label: 'Quiz Lab' },
   { to: '/chat', icon: MessageCircle, label: 'Doubt Finisher' },

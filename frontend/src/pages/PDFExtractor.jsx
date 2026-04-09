@@ -91,7 +91,7 @@ ${text}
 
 Task: ${modePrompts[mode]}
 
-Format in Hinglish (English + helpful Hindi) for a ${level} level student.
+Format in clear, professional English for a ${level} level student.
 
 ${mode !== 'questions' ? `## 📚 Study Notes
 ### Key Concepts
@@ -146,7 +146,7 @@ Ans: [Detailed answer at ${level} level]
           <h1 className="section-title" style={{ fontSize: '1.6rem' }}>PDF Note Extractor</h1>
         </div>
         <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
-          Apna PDF upload karo → AI important notes aur questions nikal dega, tere level ke hisaab se 📄✨
+          Upload your PDF → AI extracts key notes and questions tailored to your level 📄✨
         </p>
       </div>
 
@@ -238,7 +238,7 @@ Ans: [Detailed answer at ${level} level]
         <div className="glass-card" style={{ padding: '40px 24px', textAlign: 'center' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>📄</div>
           <p style={{ color: '#94a3b8', fontFamily: 'Syne', fontWeight: 600 }}>Reading your PDF...</p>
-          <p style={{ color: '#475569', fontSize: '0.8rem', marginTop: 4 }}>AI notes bana raha hai, ek second 🤖</p>
+          <p style={{ color: '#475569', fontSize: '0.8rem', marginTop: 4 }}>AI is creating your notes, one moment 🤖</p>
         </div>
       )}
 

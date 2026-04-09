@@ -5,9 +5,6 @@ from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
 import groq
-import pandas as pd
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
 import json
 
 load_dotenv()
@@ -76,35 +73,25 @@ def get_supabase():
 
 # Function to analyze learning patterns
 def analyze_learning_pattern(user_data: UserData):
-    # Simple clustering based on quiz scores and time spent
-    data = {
-        'quiz_avg': [sum(user_data.quiz_scores) / len(user_data.quiz_scores)] if user_data.quiz_scores else [0],
-        'time_avg': [sum(user_data.time_spent) / len(user_data.time_spent)] if user_data.time_spent else [0],
-        'topics_count': [len(set(user_data.topics_accessed))],
-        'doubts_count': [len(user_data.doubt_queries)]
-    }
-    df = pd.DataFrame(data)
-    scaler = StandardScaler()
-    scaled_data = scaler.fit_transform(df)
-    
-    # For simplicity, categorize based on thresholds
-    avg_score = data['quiz_avg'][0]
-    avg_time = data['time_avg'][0]
-    topics = data['topics_count'][0]
-    doubts = data['doubts_count'][0]
-    
+    # Simple pattern analysis based on quiz scores and time spent
+    avg_score = sum(user_data.quiz_scores) / len(user_data.quiz_scores) if user_data.quiz_scores else 0
+    avg_time = sum(user_data.time_spent) / len(user_data.time_spent) if user_data.time_spent else 0
+    topics_count = len(set(user_data.topics_accessed))
+    doubts_count = len(user_data.doubt_queries)
+
+    # Categorize based on thresholds
     if avg_score > 80 and avg_time > 30:
         pattern = "advanced_learner"
     elif avg_score > 60:
         pattern = "intermediate_learner"
     else:
         pattern = "beginner_learner"
-    
-    if doubts > 5:
+
+    if doubts_count > 5:
         pattern += "_high_doubts"
-    if topics > 10:
+    if topics_count > 10:
         pattern += "_diverse_topics"
-    
+
     return pattern
 
 # Endpoint to get personalized prompt and response
@@ -423,13 +410,6 @@ def format_user_data_for_analysis(user_data: dict) -> str:
         sections.append("")
     
     # YouTube Summaries
-    if user_data.get("yt_summaries"):
-        sections.append("=== YOUTUBE VIDEO SUMMARIES ===")
-        for yt in user_data["yt_summaries"]:
-            sections.append(f"Topic: {yt.get('level', 'Unknown')} - Summary: {yt['summary'][:300]}...")
-        sections.append("")
-    
-    # PDF Extractions
     if user_data.get("pdf_extractions"):
         sections.append("=== PDF EXTRACTIONS ===")
         for pdf in user_data["pdf_extractions"]:

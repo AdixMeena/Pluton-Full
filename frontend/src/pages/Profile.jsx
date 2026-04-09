@@ -16,7 +16,7 @@ export default function Profile() {
   const { profile, user, updateProfile } = useAuth()
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({ name: '', level: 'Beginner', bio: '' })
-  const [stats, setStats] = useState({ yt: 0, pdf: 0, quiz: 0, subjects: 0, todos: 0, journals: 0 })
+  const [stats, setStats] = useState({ pdf: 0, quiz: 0, subjects: 0, todos: 0, journals: 0 })
   const [quizHistory, setQuizHistory] = useState([])
   const [saving, setSaving] = useState(false)
   const [weeklyData, setWeeklyData] = useState([])
@@ -33,15 +33,14 @@ export default function Profile() {
   }, [profile])
 
   async function fetchStats() {
-    const [yt, pdf, quiz, subjects, todos, journals] = await Promise.all([
-      supabase.from('yt_summaries').select('id', { count: 'exact' }).eq('user_id', user.id),
+    const [pdf, quiz, subjects, todos, journals] = await Promise.all([
       supabase.from('pdf_extractions').select('id', { count: 'exact' }).eq('user_id', user.id),
       supabase.from('quizzes').select('id', { count: 'exact' }).eq('user_id', user.id),
       supabase.from('subjects').select('id', { count: 'exact' }).eq('user_id', user.id),
       supabase.from('todos').select('id', { count: 'exact' }).eq('user_id', user.id),
       supabase.from('journals').select('id', { count: 'exact' }).eq('user_id', user.id),
     ])
-    setStats({ yt: yt.count || 0, pdf: pdf.count || 0, quiz: quiz.count || 0, subjects: subjects.count || 0, todos: todos.count || 0, journals: journals.count || 0 })
+    setStats({ pdf: pdf.count || 0, quiz: quiz.count || 0, subjects: subjects.count || 0, todos: todos.count || 0, journals: journals.count || 0 })
   }
 
   async function fetchQuizHistory() {
@@ -63,10 +62,9 @@ export default function Profile() {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
       // Fetch user data from last 7 days
-      const [chatMessages, quizzes, ytSummaries, pdfExtractions, roadmaps] = await Promise.all([
+      const [chatMessages, quizzes, pdfExtractions, roadmaps] = await Promise.all([
         supabase.from('chat_messages').select('*').eq('user_id', user.id).gte('created_at', sevenDaysAgo.toISOString()).order('created_at'),
         supabase.from('quizzes').select('*').eq('user_id', user.id).gte('created_at', sevenDaysAgo.toISOString()).order('created_at'),
-        supabase.from('yt_summaries').select('*').eq('user_id', user.id).gte('created_at', sevenDaysAgo.toISOString()).order('created_at'),
         supabase.from('pdf_extractions').select('*').eq('user_id', user.id).gte('created_at', sevenDaysAgo.toISOString()).order('created_at'),
         supabase.from('roadmaps').select('*, subjects(name)').eq('user_id', user.id).gte('updated_at', sevenDaysAgo.toISOString()).order('updated_at')
       ])
@@ -74,7 +72,6 @@ export default function Profile() {
       const userData = {
         chat_messages: chatMessages.data || [],
         quizzes: quizzes.data || [],
-        yt_summaries: ytSummaries.data || [],
         pdf_extractions: pdfExtractions.data || [],
         roadmaps: roadmaps.data || []
       }
@@ -394,18 +391,27 @@ export default function Profile() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <h3 style={{ fontFamily: 'Syne', fontWeight: 700, color: '#f1f5f9', fontSize: '0.95rem' }}>✨ Your Learning Profile</h3>
             <button
-              onClick={() => setLearningProfile(null)}
+              onClick={generatePersonalizedProfile}
+              disabled={generatingProfile}
               style={{
-                color: '#64748b',
-                background: 'none',
+                padding: '8px 14px',
+                borderRadius: 8,
+                background: 'linear-gradient(135deg, #7c3aed, #a78bfa)',
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '0.8rem',
                 fontFamily: 'Syne',
-                fontWeight: 600
+                fontWeight: 600,
+                fontSize: '0.75rem',
+                color: 'white',
+                opacity: generatingProfile ? 0.7 : 1,
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5
               }}
             >
-              Hide
+              {generatingProfile ? <RefreshCw size={12} className="animate-spin" /> : <Sparkles size={12} />}
+              {generatingProfile ? 'Updating...' : 'Update Profile'}
             </button>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '16px' }}>

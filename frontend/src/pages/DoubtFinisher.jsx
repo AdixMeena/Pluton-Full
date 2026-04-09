@@ -61,12 +61,18 @@ export default function DoubtFinisher() {
 
     try {
       const history = messages.slice(-10).map(m => ({ role: m.role, content: m.content }))
-      const systemPrompt = `You are Pluton AI — a friendly, brilliant study assistant. 
+      
+      // Use personalized learning profile as system prompt if available
+      const baseSystemPrompt = `You are Pluton AI — a friendly, brilliant study assistant.
 The student's level is: ${profile?.level || 'Beginner'}.
-Explain concepts in Hinglish (English + Hindi mix). Be encouraging, use examples, analogies.
-Use emojis to keep it fun. Format responses clearly with markdown.
+Explain concepts clearly and professionally. Be encouraging, use examples, analogies.
+Use emojis to keep it engaging. Format responses clearly with markdown.
 If asked something off-topic from studying, gently bring it back to learning.
-and make it as shorter response as much you can based on topic `
+Keep responses concise and focused on the topic.`
+
+      const systemPrompt = profile?.learning_profile
+        ? `User Learning Profile:\n${profile.learning_profile}\n\n${baseSystemPrompt}`
+        : baseSystemPrompt
 
       const answer = await askAI([...history, { role: 'user', content: msg }], systemPrompt)
       setMessages(prev => [...prev, { role: 'assistant', content: answer, id: Date.now() }])
@@ -105,7 +111,7 @@ and make it as shorter response as much you can based on topic `
             </div>
             <div>
               <h1 className="section-title" style={{ fontSize: '1.4rem' }}>Doubt Finisher</h1>
-              <p style={{ color: '#64748b', fontSize: '0.75rem' }}>AI powered · Hinglish · {profile?.level || 'Beginner'} Level</p>
+              <p style={{ color: '#64748b', fontSize: '0.75rem' }}>AI powered · Professional English · {profile?.level || 'Beginner'} Level</p>
             </div>
           </div>
           <button className="ghost-btn" onClick={clearChat} style={{ padding: '7px 14px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -220,7 +226,7 @@ and make it as shorter response as much you can based on topic `
           <textarea
             ref={inputRef}
             className="input-field"
-            placeholder="Apna doubt yahan likho... (Enter to send)"
+            placeholder="Ask your question here... (Enter to send)"
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }}

@@ -9,7 +9,7 @@
 | 🎥 YT Summarizer | Paste any YouTube link → AI generates smart notes by your level |
 | 📄 PDF Extractor | Upload PDFs → extract key Q&A and notes |
 | 🧠 Quiz Lab | Generate MCQ quizzes from any topic or your notes |
-| 💬 Doubt Finisher | AI chat assistant in Hinglish |
+| 💬 Doubt Finisher | AI chat assistant in clear, professional English |
 | 🗺️ Roadmap Tracker | AI generates personalized learning paths per subject |
 | ✅ To-Do & Journal | Daily planner + personal study journal |
 | 👤 Profile | XP, achievements, quiz history, level tracking |

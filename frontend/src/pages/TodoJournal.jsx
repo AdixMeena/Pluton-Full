@@ -66,7 +66,7 @@ export default function TodoJournal() {
   }
 
   async function saveJournal() {
-    if (!journalText.trim()) return toast.error('Kuch toh likho! ✍️')
+    if (!journalText.trim()) return toast.error('Please write something! ✍️')
     setSavingJournal(true)
     try {
       if (editingJournal) {
@@ -125,7 +125,7 @@ export default function TodoJournal() {
           </div>
           <h1 className="section-title" style={{ fontSize: '1.6rem' }}>To-Do & Journal</h1>
         </div>
-        <p style={{ color: '#64748b', fontSize: '0.875rem' }}>Apna din plan karo aur apni journey journal mein capture karo ✨</p>
+        <p style={{ color: '#64748b', fontSize: '0.875rem' }}>Plan your day and capture your learning journey in your journal ✨</p>
       </div>
 
       {/* Tabs */}
@@ -292,7 +292,7 @@ export default function TodoJournal() {
 
             <textarea
               className="input-field"
-              placeholder="Aaj kya hua? Kya sikha? Kaisa feel kar rahe ho? Apni thoughts likho..."
+              placeholder="What happened today? What did you learn? How do you feel? Write your thoughts..."
               value={journalText}
               onChange={e => setJournalText(e.target.value)}
               style={{ minHeight: 200, resize: 'vertical', lineHeight: 1.7 }}
@@ -315,7 +315,7 @@ export default function TodoJournal() {
             <div className="glass-card" style={{ padding: '48px 24px', textAlign: 'center' }}>
               <div style={{ fontSize: '3rem', marginBottom: 12 }}>📖</div>
               <p style={{ fontFamily: 'Syne', fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>No journal entries yet</p>
-              <p style={{ color: '#475569', fontSize: '0.875rem', marginBottom: 20 }}>Apni pehli entry likhna shuru karo!</p>
+              <p style={{ color: '#475569', fontSize: '0.875rem', marginBottom: 20 }}>Start writing your first entry!</p>
               <button className="nebula-btn" onClick={() => setTab('write')} style={{ background: 'linear-gradient(135deg, #db2777, #be185d)' }}>Write First Entry ✍️</button>
             </div>
           ) : (

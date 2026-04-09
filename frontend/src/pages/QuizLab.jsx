@@ -50,10 +50,10 @@ Generate exactly ${numQ} multiple choice questions. Return ONLY valid JSON (no m
   "questions": [
     {
       "id": 1,
-      "question": "Question text in Hinglish if helpful",
+      "question": "Question text in clear English",
       "options": ["A) Option 1", "B) Option 2", "C) Option 3", "D) Option 4"],
       "correct": 0,
-      "explanation": "Explanation in simple Hinglish"
+      "explanation": "Clear explanation in simple English"
     }
   ]
 }
@@ -134,7 +134,7 @@ correct is 0-indexed. Make questions appropriate for ${level} level. Return ONLY
           <h1 className="section-title" style={{ fontSize: '1.6rem' }}>Quiz Lab</h1>
         </div>
         <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
-          Apne knowledge ko test karo — notes se ya kisi bhi topic par quiz banao 🧠
+          Test your knowledge — create quizzes from notes or any topic 🧠
         </p>
       </div>
 
@@ -205,7 +205,7 @@ correct is 0-indexed. Make questions appropriate for ${level} level. Return ONLY
       {loading && (
         <div className="glass-card" style={{ padding: '40px 24px', textAlign: 'center' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🧠</div>
-          <p style={{ color: '#94a3b8', fontFamily: 'Syne', fontWeight: 600 }}>Quiz ban raha hai...</p>
+          <p style={{ color: '#94a3b8', fontFamily: 'Syne', fontWeight: 600 }}>Creating your quiz...</p>
         </div>
       )}
 
@@ -215,7 +215,7 @@ correct is 0-indexed. Make questions appropriate for ${level} level. Return ONLY
           <Trophy size={36} style={{ color: pct >= 70 ? '#fbbf24' : '#f87171', margin: '0 auto 12px' }} />
           <h2 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '2rem', color: '#f1f5f9' }}>{score}/{quiz.questions.length}</h2>
           <p style={{ color: pct >= 70 ? '#34d399' : '#f87171', fontFamily: 'Syne', fontWeight: 600, marginTop: 4 }}>
-            {pct >= 80 ? '🔥 Excellent! Bahut accha kiya!' : pct >= 60 ? '👍 Good job! Thoda aur practice karo' : '💪 Keep practicing! Hoga!'}
+            {pct >= 80 ? '🔥 Excellent! Great work!' : pct >= 60 ? '👍 Good job! Keep practicing' : '💪 Keep practicing! You\'ll get there!'}
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
             <button className="ghost-btn" onClick={reset} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

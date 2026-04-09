@@ -2,11 +2,10 @@ import { useState } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import StarField from './StarField'
-import { Menu, X, LayoutDashboard, Youtube, FileText, Brain, MessageCircle, Map, CheckSquare, User } from 'lucide-react'
+import { Menu, X, LayoutDashboard, FileText, Brain, MessageCircle, CheckSquare, User } from 'lucide-react'
 
 const mobileNav = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Home' },
-  { to: '/youtube', icon: Youtube, label: 'YT' },
   { to: '/pdf', icon: FileText, label: 'PDF' },
   { to: '/quiz', icon: Brain, label: 'Quiz' },
   { to: '/chat', icon: MessageCircle, label: 'Chat' },
